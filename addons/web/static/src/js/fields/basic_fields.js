@@ -2953,6 +2953,9 @@ var FieldProgressBar = AbstractField.extend({
         // Boolean to toggle if we edit the numerator (value) or the denominator (max_value)
         this.edit_max_value = !!this.nodeOptions.edit_max_value;
         this.max_value = this.recordData[this.nodeOptions.max_value] || 100;
+        if (this.nodeOptions.max_field) {
+            this.max_value = this.recordData[this.nodeOptions.max_field];
+        }
 
         this.title = _t(this.attrs.title || this.nodeOptions.title) || '';
 
