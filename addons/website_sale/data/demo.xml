@@ -105,31 +105,31 @@
         </record>
         <record id="public_category_boxes" model="product.public.category">
             <field name="name">Boxes</field>
-            <field name="sequence">20</field>
+            <field name="sequence">21</field>
         </record>
         <record id="public_category_drawers" model="product.public.category">
           <field name="name">Drawers</field>
-          <field name="sequence">21</field>
+          <field name="sequence">22</field>
         </record>
         <record id="public_category_cabinets" model="product.public.category">
           <field name="name">Cabinets</field>
-          <field name="sequence">22</field>
+          <field name="sequence">23</field>
         </record>
         <record id="public_category_bins" model="product.public.category">
           <field name="name">Bins</field>
-          <field name="sequence">23</field>
+          <field name="sequence">24</field>
         </record>
         <record id="public_category_lamps" model="product.public.category">
           <field name="name">Lamps</field>
-          <field name="sequence">24</field>
+          <field name="sequence">25</field>
         </record>
         <record id="services" model="product.public.category">
           <field name="name">Services</field>
-          <field name="sequence">25</field>
+          <field name="sequence">26</field>
         </record>
         <record id="public_category_multimedia" model="product.public.category">
           <field name="name">Multimedia</field>
-          <field name="sequence">26</field>
+          <field name="sequence">27</field>
         </record>
 
         <!-- subcategories -->
@@ -147,6 +147,11 @@
           <field name="parent_id" eval="ref('public_category_furnitures')"/>
           <field name="name">Couches</field>
           <field name="sequence">19</field>
+        </record>
+        <record id="public_category_furnitures_stools" model="product.public.category">
+          <field name="parent_id" eval="ref('public_category_furnitures')"/>
+          <field name="name">Stools</field>
+          <field name="sequence">20</field>
         </record>
 
         <record id="product.product_product_1_product_template" model="product.template">
@@ -736,4 +741,340 @@
             <field name="user_id" ref="base.user_demo"/>
         </record>
 
+        <!-- Filtering demo data -->
+
+        <record id="website_sale_filter_1" model="product.attribute">
+            <field name="name">Frame Material</field>
+            <field name="create_variant">no_variant</field>
+            <field name="multi_valued" eval="False"/>
+            <field name="display_type">radio</field>
+        </record>
+
+        <record id="website_sale_filter_1_value_1" model="product.attribute.value">
+            <field name="name">Wood</field>
+            <field name="attribute_id" ref="website_sale_filter_1"/>
+        </record>
+
+        <record id="website_sale_filter_1_value_2" model="product.attribute.value">
+            <field name="name">Plastic</field>
+            <field name="attribute_id" ref="website_sale_filter_1"/>
+        </record>
+
+        <record id="website_sale_filter_1_value_3" model="product.attribute.value">
+            <field name="name">Aluminium</field>
+            <field name="attribute_id" ref="website_sale_filter_1"/>
+        </record>
+
+        <record id="website_sale_filter_1_value_4" model="product.attribute.value">
+            <field name="name">Steel</field>
+            <field name="attribute_id" ref="website_sale_filter_1"/>
+        </record>
+
+        <record id="website_sale_filter_2" model="product.attribute">
+            <field name="name">Cushioning</field>
+            <field name="create_variant">no_variant</field>
+            <field name="multi_valued" eval="False"/>
+            <field name="display_type">radio</field>
+        </record>
+
+        <record id="website_sale_filter_2_value_1" model="product.attribute.value">
+            <field name="name">With Cushioning</field>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+        </record>
+
+        <record id="website_sale_filter_2_value_2" model="product.attribute.value">
+            <field name="name">Without Cushioning</field>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+        </record>
+
+        <record id="website_sale_filter_3" model="product.attribute">
+            <field name="name">Special Features</field>
+            <field name="create_variant">no_variant</field>
+            <field name="multi_valued" eval="True"/>
+            <field name="display_type">radio</field>
+        </record>
+
+        <record id="website_sale_filter_3_value_1" model="product.attribute.value">
+            <field name="name">Collapsible</field>
+            <field name="attribute_id" ref="website_sale_filter_3"/>
+        </record>
+
+        <record id="website_sale_filter_3_value_2" model="product.attribute.value">
+            <field name="name">Adjustable Height</field>
+            <field name="attribute_id" ref="website_sale_filter_3"/>
+        </record>
+
+        <!-- Physical Products -->
+
+        <record id="website_sale_product_chair_1" model="product.template">
+            <field name="name">Blue Adjustable Office Chair</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">80.0</field>
+            <field name="list_price">120.0</field>
+            <field name="type">consu</field>
+            <field name="weight">14.00</field>
+            <field name="default_code">FURN_8001</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_chairs')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_chair_1.png"/>
+        </record>
+
+        <record id="website_sale_product_chair_2" model="product.template">
+            <field name="name">Cushioned Dining Chair</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">60.0</field>
+            <field name="list_price">90.0</field>
+            <field name="type">consu</field>
+            <field name="weight">10.00</field>
+            <field name="default_code">FURN_8002</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_chairs')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_chair_2.png"/>
+        </record>
+
+        <record id="website_sale_product_chair_3" model="product.template">
+            <field name="name">Wooden Swing Chair</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">75.0</field>
+            <field name="list_price">100.0</field>
+            <field name="type">consu</field>
+            <field name="weight">11.00</field>
+            <field name="default_code">FURN_8004</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_chairs')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_chair_3.png"/>
+        </record>
+
+        <record id="website_sale_product_chair_4" model="product.template">
+            <field name="name">Wooden Chair</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">30.0</field>
+            <field name="list_price">45.0</field>
+            <field name="type">consu</field>
+            <field name="weight">7.00</field>
+            <field name="default_code">FURN_8005</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_chairs')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_chair_4.png"/>
+        </record>
+
+        <record id="website_sale_product_chair_5" model="product.template">
+            <field name="name">Plastic Chair</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">30.0</field>
+            <field name="list_price">45.0</field>
+            <field name="type">consu</field>
+            <field name="weight">5.50</field>
+            <field name="default_code">FURN_8005</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_chairs')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_chair_5.png"/>
+        </record>
+
+        <record id="website_sale_product_chair_6" model="product.template">
+            <field name="name">Extra-Wide Garden Chair</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">100.0</field>
+            <field name="list_price">140.0</field>
+            <field name="type">consu</field>
+            <field name="weight">12.00</field>
+            <field name="default_code">GARD_5101</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_chairs')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_garden_chair_1.png"/>
+        </record>
+
+        <record id="website_sale_product_chair_7" model="product.template">
+            <field name="name">Steel Patio Chair</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">70.0</field>
+            <field name="list_price">110.0</field>
+            <field name="type">consu</field>
+            <field name="weight">7.40</field>
+            <field name="default_code">GARD_5102</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_chairs')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_garden_chair_2.png"/>
+        </record>
+
+        <record id="website_sale_product_chair_8" model="product.template">
+            <field name="name">Camping Chair</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">25.0</field>
+            <field name="list_price">35.0</field>
+            <field name="type">consu</field>
+            <field name="weight">3.00</field>
+            <field name="default_code">GARD_5103</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_chairs')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_garden_chair_3.png"/>
+        </record>
+
+        <record id="website_sale_product_chair_9" model="product.template">
+            <field name="name">Height Adjustable Stool</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">70.0</field>
+            <field name="list_price">110.0</field>
+            <field name="type">consu</field>
+            <field name="weight">11.30</field>
+            <field name="default_code">FURN_8101</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_stools')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_stool_1.png"/>
+        </record>
+
+        <record id="website_sale_product_chair_10" model="product.template">
+            <field name="name">Wooden Stool</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">70.0</field>
+            <field name="list_price">110.0</field>
+            <field name="type">consu</field>
+            <field name="weight">11.30</field>
+            <field name="default_code">FURN_8102</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_stools')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_stool_2.png"/>
+        </record>
+
+        <record id="website_sale_product_chair_11" model="product.template">
+            <field name="name">Black Counter Height Chair</field>
+            <field name="categ_id" ref="product.product_category_5"/>
+            <field name="standard_price">85.0</field>
+            <field name="list_price">150.0</field>
+            <field name="type">consu</field>
+            <field name="weight">8.30</field>
+            <field name="default_code">FURN_8103</field>
+            <field name="is_published" eval="True"/>
+            <field name="public_categ_ids" eval="[(6,0,[ref('public_category_furnitures_stools')])]"/>
+            <field name="image_1920" type="base64" file="website_sale/static/src/img/product_stool_3.png"/>
+        </record>
+
+        <!-- Product filter publications -->
+
+        <record id="filter_publication_1" model="product.attribute.publication">
+            <field name="product_attribute_id" ref="website_sale_filter_1"/>
+            <field name="product_public_category_id" ref="public_category_furnitures"/>
+        </record>
+
+        <record id="filter_publication_2" model="product.attribute.publication">
+            <field name="product_attribute_id" ref="website_sale_filter_2"/>
+            <field name="product_public_category_id" ref="public_category_furnitures_chairs"/>
+        </record>
+
+        <record id="filter_publication_3" model="product.attribute.publication">
+            <field name="product_attribute_id" ref="website_sale_filter_3"/>
+            <field name="product_public_category_id" ref="public_category_furnitures_chairs"/>
+        </record>
+
+        <record id="filter_publication_4" model="product.attribute.publication">
+            <field name="product_attribute_id" ref="website_sale_filter_2"/>
+            <field name="product_public_category_id" ref="public_category_furnitures_stools"/>
+        </record>
+
+        <record id="filter_publication_5" model="product.attribute.publication">
+            <field name="product_attribute_id" ref="website_sale_filter_3"/>
+            <field name="product_public_category_id" ref="public_category_furnitures_stools"/>
+        </record>
+
+        <record id="product_chair_1_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_1"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_1')])]"/>
+        </record>
+
+        <record id="product_chair_2_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_2"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_1')])]"/>
+        </record>
+
+        <record id="product_chair_3_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_3"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_2')])]"/>
+        </record>
+
+        <record id="product_chair_4_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_4"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_2')])]"/>
+        </record>
+
+        <record id="product_chair_5_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_5"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_2')])]"/>
+        </record>
+
+        <record id="product_chair_6_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_6"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_2')])]"/>
+        </record>
+
+        <record id="product_chair_7_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_7"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_2')])]"/>
+        </record>
+
+        <record id="product_chair_8_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_8"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_2')])]"/>
+        </record>
+
+        <record id="product_chair_9_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_9"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_2')])]"/>
+        </record>
+
+        <record id="product_chair_10_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_10"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_2')])]"/>
+        </record>
+
+        <record id="product_chair_11_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_11"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_2')])]"/>
+        </record>
+
+        <record id="product_product_11_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product.product_product_11_product_template"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_1')])]"/>
+        </record>
+
+        <record id="product_product_12_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product.product_product_12_product_template"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_1')])]"/>
+        </record>
+
+        <record id="product_delivery_01_filter_2_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="product.product_delivery_01_product_template"/>
+            <field name="attribute_id" ref="website_sale_filter_2"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_2_value_1')])]"/>
+        </record>
+
+        <record id="product_chair_1_filter_3_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_1"/>
+            <field name="attribute_id" ref="website_sale_filter_3"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_3_value_2')])]"/>
+        </record>
+
+        <record id="product_chair_8_filter_3_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_8"/>
+            <field name="attribute_id" ref="website_sale_filter_3"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_3_value_1')])]"/>
+        </record>
+
+        <record id="product_chair_9_filter_3_attribute_line" model="product.template.attribute.line">
+            <field name="product_tmpl_id" ref="website_sale_product_chair_9"/>
+            <field name="attribute_id" ref="website_sale_filter_3"/>
+            <field name="value_ids" eval="[(6,0,[ref('website_sale_filter_3_value_2')])]"/>
+        </record>
 </odoo>
