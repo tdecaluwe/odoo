@@ -3616,15 +3616,17 @@ class Many2many(_RelationalMulti):
     auto_join = False                   # whether joins are generated upon search
     limit = None                        # optional limit to use upon read
     ondelete = None                     # optional ondelete for the column2 fkey
+    auto = True
 
     def __init__(self, comodel_name=Default, relation=Default, column1=Default,
-                 column2=Default, string=Default, **kwargs):
+                 column2=Default, string=Default, auto=Default, **kwargs):
         super(Many2many, self).__init__(
             comodel_name=comodel_name,
             relation=relation,
             column1=column1,
             column2=column2,
             string=string,
+            auto=auto,
             **kwargs
         )
 
@@ -3696,7 +3698,7 @@ class Many2many(_RelationalMulti):
             model.pool.post_init(model.env['ir.model.relation']._reflect_relation,
                                  model, self.relation, self._module)
         comodel = model.env[self.comodel_name]
-        if not sql.table_exists(cr, self.relation):
+        if self.auto and not sql.table_exists(cr, self.relation):
             query = """
                 CREATE TABLE "{rel}" ("{id1}" INTEGER NOT NULL,
                                       "{id2}" INTEGER NOT NULL,
@@ -3712,12 +3714,12 @@ class Many2many(_RelationalMulti):
     def update_db_foreign_keys(self, model):
         """ Add the foreign keys corresponding to the field's relation table. """
         comodel = model.env[self.comodel_name]
-        if model._is_an_ordinary_table():
+        if self.auto and model._is_an_ordinary_table():
             model.pool.add_foreign_key(
                 self.relation, self.column1, model._table, 'id', 'cascade',
                 model, self._module, force=False,
             )
-        if comodel._is_an_ordinary_table():
+        if self.auto and comodel._is_an_ordinary_table():
             model.pool.add_foreign_key(
                 self.relation, self.column2, comodel._table, 'id', self.ondelete,
                 model, self._module,
