@@ -1774,13 +1774,13 @@ class BaseModel(metaclass=MetaModel):
         return self[0].get_formview_action(access_uid=access_uid)
 
     @api.model
-    def search_count(self, args):
+    def search_count(self, args, groupby=None):
         """ search_count(args) -> int
 
         Returns the number of records in the current model matching :ref:`the
         provided domain <reference/orm/domains>`.
         """
-        res = self.search(args, count=True)
+        res = self._search(args, count=True, groupby=groupby)
         return res if isinstance(res, int) else len(res)
 
     @api.model
@@ -4550,7 +4550,7 @@ Fields:
             self.env[model_name].flush(field_names)
 
     @api.model
-    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+    def _search(self, args, offset=0, limit=None, order=None, count=False, groupby=None, access_rights_uid=None):
         """
         Private implementation of search() method, allowing specifying the uid to use for the access right check.
         This is useful for example when filling in the selection list for a drop-down and avoiding access rights errors,
@@ -4578,6 +4578,10 @@ Fields:
             # Ignore order, limit and offset when just counting, they don't make sense and could
             # hurt performance
             query_str, params = query.select("count(1)")
+
+            if groupby:
+                query_str, params = query.select("count(DISTINCT {})".format(groupby))
+
             self._cr.execute(query_str, params)
             res = self._cr.fetchone()
             return res[0]
