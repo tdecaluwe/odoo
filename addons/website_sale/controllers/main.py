@@ -156,7 +156,10 @@ class WebsiteSale(http.Controller):
         return 'is_published desc, %s, id desc' % order
 
     def _get_search_domain(self, search, category, attrib_values, search_in_description=True):
-        domains = [request.website.sale_product_domain()]
+        domains = [
+            request.website.sale_product_domain(),
+            [('matching_exclusion_ids', '=', False)],
+        ]
         if search:
             for srch in search.split(" "):
                 subdomains = [
@@ -181,11 +184,11 @@ class WebsiteSale(http.Controller):
                 elif value[0] == attrib:
                     ids.append(value[1])
                 else:
-                    domains.append([('attribute_line_ids.value_ids', 'in', ids)])
+                    domains.append([('applied_property_ids.attribute_value_id', 'in', ids)])
                     attrib = value[0]
                     ids = [value[1]]
             if attrib:
-                domains.append([('attribute_line_ids.value_ids', 'in', ids)])
+                domains.append([('applied_property_ids.attribute_value_id', 'in', ids)])
 
         return expression.AND(domains)
 
@@ -247,9 +250,10 @@ class WebsiteSale(http.Controller):
         if attrib_list:
             post['attrib'] = attrib_list
 
-        Product = request.env['product.template'].with_context(bin_size=True)
+        Product = request.env['product.product'].with_context(bin_size=True)
 
-        search_product = Product.search(domain, order=self._get_search_order(post))
+        search_variant = Product.search(domain, order=self._get_search_order(post))
+        search_product = search_variant.product_tmpl_id
         website_domain = request.website.website_domain()
         categs_domain = [('parent_id', '=', False)] + website_domain
         if search:
@@ -1128,7 +1132,7 @@ class WebsiteSale(http.Controller):
                 - 'products_count' (int): the number of products in the database
                         that matched the search query
         """
-        ProductTemplate = request.env['product.template']
+        ProductProduct = request.env['product.product']
 
         display_description = options.get('display_description', True)
         display_price = options.get('display_price', True)
@@ -1139,11 +1143,11 @@ class WebsiteSale(http.Controller):
         attrib_values = options.get('attrib_values')
 
         domain = self._get_search_domain(term, category, attrib_values, display_description)
-        products = ProductTemplate.search(
+        products = ProductProduct.search(
             domain,
             limit=min(20, options.get('limit', 5)),
             order=order
-        )
+        ).product_tmpl_id
 
         fields = ['id', 'name', 'website_url']
         if display_description:
@@ -1151,7 +1155,7 @@ class WebsiteSale(http.Controller):
 
         res = {
             'products': products.read(fields),
-            'products_count': ProductTemplate.search_count(domain),
+            'products_count': ProductProduct.search_count(domain, groupby='product_tmpl_id'),
         }
 
         if display_description:

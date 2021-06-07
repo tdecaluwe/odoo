@@ -107,6 +107,9 @@ class ProductProduct(models.Model):
     barcode = fields.Char(
         'Barcode', copy=False,
         help="International Article Number used for product identification.")
+    product_property_ids = fields.One2many('product.property', inverse_name='product_product_id', string='Product Properties')
+    applied_property_ids = fields.Many2many('product.property', relation='product_property_expansion', auto=False)
+    matching_exclusion_ids = fields.Many2many('product.template.attribute.exclusion', relation='product_template_attribute_exclusion_match', auto=False)
     product_template_attribute_value_ids = fields.Many2many('product.template.attribute.value', relation='product_variant_combination', string="Attribute Values", ondelete='restrict')
     combination_indices = fields.Char(compute='_compute_combination_indices', store=True, index=True)
     is_product_variant = fields.Boolean(compute='_compute_is_product_variant')
@@ -333,13 +336,78 @@ class ProductProduct(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        products = super(ProductProduct, self.with_context(create_product_product=True)).create(vals_list)
+        products = super(ProductProduct, self.with_context(create_product_product=True)).create([
+            self._transform_property_values(values) for values in vals_list
+        ])
         # `_get_variant_id_for_combination` depends on existing variants
         self.clear_caches()
         return products
 
+    def _transform_property_values(self, product_values):
+        if 'product_template_attribute_value_ids' not in product_values:
+            return product_values
+
+        ProductTemplateAttributeValue = self.env['product.template.attribute.value']
+        ProductProperty = self.env['product.property']
+
+        operations = product_values.get('product_template_attribute_value_ids')
+
+        attributes = product_values['product_template_attribute_value_ids'] = []
+        properties = product_values.setdefault('product_property_ids', [])
+
+        for (code, ptav_id, values) in operations:
+            if code == 0:
+                ptav = ProductTemplateAttributeValue.create(values)
+                properties.append((0, None, {
+                    'product_template_attribute_value_id': ptav.id,
+                    'attribute_line_id': ptav.attribute_line_id.id,
+                    'attribute_value_id': ptav.product_attribute_value_id.id,
+                    'attribute_id': ptav.product_attribute_value_id.attribute_id.id,
+                    'product_template_id': ptav.product_tmpl_id.id
+                }))
+                attributes.append((4, ptav.id, None))
+            elif code == 1:
+                attributes.append((1, ptav_id, values))
+            elif code == 2:
+                ProductProperty.search([
+                    ('product_product_id', 'in', self.ids),
+                    ('product_template_attribute_value_id', '=', ptav_id),
+                ]).unlink()
+                attributes.append((2, ptav_id, None))
+            elif code == 3:
+                ProductProperty.search([
+                    ('product_product_id', 'in', self.ids),
+                    ('product_template_attribute_value_id', '=', ptav_id),
+                ]).unlink()
+                attributes.append((3, ptav_id, None))
+            elif code == 4:
+                ptav = ProductTemplateAttributeValue.browse(ptav_id)
+                properties.append((0, 0, {
+                    'product_template_attribute_value_id': ptav.id,
+                    'attribute_line_id': ptav.attribute_line_id.id,
+                    'attribute_value_id': ptav.product_attribute_value_id.id,
+                    'attribute_id': ptav.product_attribute_value_id.attribute_id.id,
+                    'product_template_id': ptav.product_tmpl_id.id
+                }))
+                attributes.append((4, ptav_id, None))
+            elif code == 5:
+                properties.append((5, None, None))
+                attributes.append((5, None, None))
+            elif code == 6:
+                properties.append((5, None, None))
+                properties.extend([(0, None, {
+                    'product_template_attribute_value_id': ptav.id,
+                    'attribute_line_id': ptav.attribute_line_id.id,
+                    'attribute_value_id': ptav.product_attribute_value_id.id,
+                    'attribute_id': ptav.product_attribute_value_id.attribute_id.id,
+                    'product_template_id': ptav.product_tmpl_id.id
+                }) for ptav in ProductTemplateAttributeValue.browse(values)])
+                attributes.append((6, None, values))
+
+        return product_values
+
     def write(self, values):
-        res = super(ProductProduct, self).write(values)
+        res = super(ProductProduct, self).write(self._transform_property_values(values))
         if 'product_template_attribute_value_ids' in values:
             # `_get_variant_id_for_combination` depends on `product_template_attribute_value_ids`
             self.clear_caches()

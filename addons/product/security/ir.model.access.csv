@@ -26,3 +26,5 @@ access_product_attribute_custom_value_manager,product.attribute.custom value man
 access_product_product_attribute_manager,product.template.attribute value manager,model_product_template_attribute_value,base.group_system,1,1,1,1
 access_product_template_attribute_exclusion_manager,product.template.attribute exclusion manager,model_product_template_attribute_exclusion,base.group_system,1,1,1,1
 access_product_template_attribute_line_manager,product.template.attribute line manager,model_product_template_attribute_line,base.group_system,1,1,1,1
+access_product_property_public,product.property public,product.model_product_property,base.group_user,1,0,0,0
+access_product_property_manager,product.property manager,product.model_product_property,base.group_system,1,1,1,1
