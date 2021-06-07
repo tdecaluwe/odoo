@@ -8,6 +8,8 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="display_type"/>
+                <field name="multi_valued"/>
+                <field name="is_numerical"/>
                 <field name="create_variant"/>
             </tree>
         </field>
@@ -25,6 +27,7 @@
                     <field name="name" nolabel="1"/>
                     <field name="display_type" widget="radio"/>
                     <field name="create_variant" widget="radio" attrs="{'readonly': [('is_used_on_products', '=', True)]}"/>
+                    <field name="multi_valued" attrs="{'readonly': [('create_variant', '!=', 'no_variant')]}"/>
                 </group>
                 <notebook>
                     <page string="Attribute Values" name="attribute_values">

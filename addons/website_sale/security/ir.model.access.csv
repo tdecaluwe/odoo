@@ -4,6 +4,8 @@ access_product_template_public,product.template.public,product.model_product_tem
 access_product_category_public,product.category.public,product.model_product_category,,1,0,0,0
 access_product_category_pos_manager,product.public.category manager,model_product_public_category,sales_team.group_sale_manager,1,1,1,1
 access_product_public_category_public,product.category.public,model_product_public_category,,1,0,0,0
+access_product_attribute_publication_public,product.attribute.publication public,model_product_attribute_publication,,1,0,0,0
+access_product_attribute_publication_manager,product.attribute.publication manager,model_product_attribute_publication,sales_team.group_sale_manager,1,1,1,1
 access_product_pricelist_public,product.pricelist.public,product.model_product_pricelist,,1,0,0,0
 access_product_pricelist_item_public,product.pricelist.item.public,product.model_product_pricelist_item,,1,0,0,0
 access_product_ribbon_public,product.ribbon.public,website_sale.model_product_ribbon,,1,0,0,0
@@ -14,6 +16,8 @@ access_product_product_attribute,product.template.attribute value public,product
 access_product_product_attribute_custom_value,product.attribute.custom value,sale.model_product_attribute_custom_value,,1,0,0,0
 access_product_template_attribute_exclusion,product.template.attribute exclusion public,product.model_product_template_attribute_exclusion,,1,0,0,0
 access_product_template_attribute_line_public,product.template.attribute line public,product.model_product_template_attribute_line,,1,0,0,0
+access_product_template_attribution_public,product.template.attribution public,model_product_template_attribution,,1,1,1,1
+access_product_template_attribution_line_public,product.template.attribution line public,model_product_template_attribution_line,,1,1,1,1
 access_fiscal_position_public,fiscal position public,account.model_account_fiscal_position,base.group_portal,1,0,0,0
 access_payment_term,payment term public,account.model_account_payment_term,base.group_portal,1,0,0,0
 access_account_tax_user,account.tax,account.model_account_tax,base.group_public,1,0,0,0

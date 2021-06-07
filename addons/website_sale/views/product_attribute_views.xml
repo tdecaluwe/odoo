@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_attribute_view_form" model="ir.ui.view">
+        <field name="name">product.attribute.form</field>
+        <field name="inherit_id" ref="product.product_attribute_view_form"/>
+        <field name="model">product.attribute</field>
+        <field name="arch" type="xml">
+            <page name="attribute_values" position="after">
+                <page string="Published Categories">
+                    <field name="product_attribute_publication_ids">
+                        <tree editable="bottom">
+                            <field name="create_variant" invisible="1"/>
+                            <field name="product_public_category_id"/>
+                            <field name="valid_count" widget="progressbar" options="{'max_field': 'total_count'}"/>
+                            <field name="total_count" invisible="1"/>
+                            <button name="view_products" type="object" icon="fa-external-link" attrs="{'invisible': [('create_variant', '!=', 'no_variant')]}"/>
+                            <button type="object" name="push_down" icon="fa-angle-double-down"/>
+                            <button type="object" name="bubble_up" icon="fa-angle-double-up"/>
+                        </tree>
+                    </field>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>

@@ -163,6 +163,19 @@
                             <field name="sequence" groups="base.group_no_one"/>
                         </group>
                     </div>
+                    <notebook>
+                        <page string="Published Attributes" name="published_attributes">
+                            <field name="product_attribute_publication_ids">
+                                <tree editable="bottom">
+                                    <field name="create_variant" invisible="1"/>
+                                    <field name="product_attribute_id"/>
+                                    <field name="valid_count" widget="progressbar" options="{'max_field': 'total_count'}"/>
+                                    <field name="total_count" invisible="1"/>
+                                    <button name="view_products" type="object" icon="fa-external-link" attrs="{'invisible': [('create_variant', '!=', 'no_variant')]}"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

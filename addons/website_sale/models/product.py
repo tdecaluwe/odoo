@@ -161,6 +161,9 @@ class ProductPublicCategory(models.Model):
     website_description = fields.Html('Category Description', sanitize_attributes=False, translate=html_translate, sanitize_form=False)
     product_tmpl_ids = fields.Many2many('product.template', relation='product_public_category_product_template_rel')
 
+    product_attribute_publication_ids = fields.One2many('product.attribute.publication', inverse_name='product_public_category_id')
+    product_inherited_publication_ids = fields.One2many('product.attribute.publication', compute='_compute_inherited_publications', inverse='_inverse_inherited_publications')
+
     @api.constrains('parent_id')
     def check_parent_id(self):
         if not self._check_recursion():
@@ -178,6 +181,21 @@ class ProductPublicCategory(models.Model):
                 category.parents_and_self = self.env['product.public.category'].browse([int(p) for p in category.parent_path.split('/')[:-1]])
             else:
                 category.parents_and_self = category
+
+    @api.depends('parents_and_self')
+    def _compute_inherited_publications(self):
+        for category in self:
+            category_id = category.id
+            product_inherited_publication_ids = category.parents_and_self.mapped('product_attribute_publication_ids')
+
+    def _inverse_inherited_publications(self):
+        self.ensure_one()
+
+        publications = category.parents_and_self.mapped('product_attribute_publication_ids')
+
+        for publication in self.product_inherited_publication_ids:
+            pass
+            #if publication in 
 
 
 class ProductTemplate(models.Model):

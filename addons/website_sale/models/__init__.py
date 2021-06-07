@@ -8,6 +8,7 @@ from . import mail_compose_message
 from . import payment
 from . import product_image
 from . import product
+from . import product_website_filters
 from . import res_country
 from . import res_partner
 from . import sale_order

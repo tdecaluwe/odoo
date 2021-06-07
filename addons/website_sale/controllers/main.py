@@ -272,7 +272,12 @@ class WebsiteSale(http.Controller):
         products = search_product[offset: offset + ppg]
 
         ProductAttribute = request.env['product.attribute']
-        if products:
+        ProductAttributePublication = request.env['product.attribute.publication']
+        if category:
+            attributes = ProductAttributePublication.search([
+                ('product_public_category_id', 'in', category.ids)
+            ]).product_attribute_id
+        elif products:
             # get all products without limit
             attributes = ProductAttribute.search([('product_tmpl_ids', 'in', search_product.ids)])
         else:

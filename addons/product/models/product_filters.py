@@ -28,6 +28,16 @@ class ProductProperty(models.Model):
 
     applied_product_ids = fields.Many2many('product.product', relation='product_property_expansion', auto=False)
 
+    numerical_value = fields.Integer()
+    affirm = fields.Boolean(default=False)
+    negate = fields.Boolean(default=False)
+
+    property_value = fields.Integer(compute='_compute_value', store=True)
+
+    def _compute_value(self):
+        for record in self:
+            record.property_value = record.attribute_value_id or record.numerical_value
+
     def init(self):
         super().init()
         self._cr.execute('''

@@ -35,6 +35,14 @@ class ProductAttribute(models.Model):
         ('pills', 'Pills'),
         ('select', 'Select'),
         ('color', 'Color')], default='radio', required=True, help="The display type used in the Product Configurator.")
+    multi_valued = fields.Boolean(default=True, required=True)
+    is_numerical = fields.Boolean(default=False, required=True)
+
+    @api.onchange('create_variant')
+    def _onchange_create_variant(self):
+        for record in self:
+            if record.create_variant != 'no_variant':
+                record.multi_valued = True
 
     @api.depends('product_tmpl_ids')
     def _compute_is_used_on_products(self):
@@ -82,6 +90,13 @@ class ProductAttribute(models.Model):
                     (pa.display_name, ", ".join(pa.product_tmpl_ids.mapped('display_name')))
                 )
 
+    # TODO Check if the dynamic create_variant option should also allow
+    #      multiple attribute values.
+    _sql_constraints = [(
+        'create_variant_multi_valued_constraint',
+        'CHECK (create_variant = \'no_variant\' OR multi_valued IS TRUE)',
+        'Variant dimension lines should always allow multiple attribute values'
+    )]
 
 class ProductAttributeValue(models.Model):
     _name = "product.attribute.value"
@@ -172,7 +187,73 @@ class ProductTemplateAttributeLine(models.Model):
     attribute_id = fields.Many2one('product.attribute', string="Attribute", ondelete='restrict', required=True, index=True)
     value_ids = fields.Many2many('product.attribute.value', string="Values", domain="[('attribute_id', '=', attribute_id)]",
         relation='product_attribute_value_product_template_attribute_line_rel', ondelete='restrict')
+    product_property_ids = fields.One2many('product.property', 'attribute_line_id', 'Properties', copy=True)
     product_template_value_ids = fields.One2many('product.template.attribute.value', 'attribute_line_id', string="Product Attribute Values")
+    attribute_value_count = fields.Integer(compute='_compute_attribute_value_count')
+    create_variant = fields.Selection(related='attribute_id.create_variant')
+    multi_valued = fields.Boolean(related='attribute_id.multi_valued')
+
+    def _transform_property_values(self, line_values):
+        attribute_id = line_values.get('attribute_id', self.attribute_id.id)
+        create_variant = self.env['product.attribute'].browse(attribute_id).create_variant
+
+        if create_variant != 'no_variant' or 'value_ids' not in line_values:
+            return line_values
+
+        product_tmpl_id = line_values.get('product_tmpl_id', self.product_tmpl_id.id)
+
+        ProductAttributeValue = self.env['product.attribute.value']
+        ProductProperty = self.env['product.property']
+
+        operations = line_values.get('value_ids')
+
+        attributes = line_values['value_ids'] = []
+        properties = line_values.setdefault('product_property_ids', [])
+
+        for (code, value_id, values) in operations:
+            if code == 0:
+                value = ProductAttributeValue.create(values)
+                properties.append((0, None, {
+                    'attribute_value_id': value.id,
+                    'attribute_id': value.attribute_id.id,
+                    'product_template_id': product_tmpl_id,
+                }))
+                attributes.append((4, value.id, None))
+            elif code == 1:
+                attributes.append((1, value_id, values))
+            elif code == 2:
+                ProductProperty.search([
+                    ('product_template_id', '=', product_tmpl_id),
+                    ('attribute_value_id', '=', value_id),
+                ]).unlink()
+                attributes.append((2, value_id, None))
+            elif code == 3:
+                ProductProperty.search([
+                    ('product_template_id', '=', product_tmpl_id),
+                    ('attribute_value_id', '=', value_id),
+                ]).unlink()
+                attributes.append((3, value_id, None))
+            elif code == 4:
+                value = ProductAttributeValue.browse(value_id)
+                properties.append((0, 0, {
+                    'attribute_value_id': ptav.id,
+                    'attribute_id': value_id.attribute_id.id,
+                    'product_template_id': product_tmpl_id,
+                }))
+                attributes.append((4, value_id, None))
+            elif code == 5:
+                properties.append((5, None, None))
+                attributes.append((5, None, None))
+            elif code == 6:
+                properties.append((5, None, None))
+                properties.extend([(0, None, {
+                    'attribute_value_id': value.id,
+                    'attribute_id': value.attribute_id.id,
+                    'product_template_id': product_tmpl_id,
+                }) for value in ProductAttributeValue.browse(values)])
+                attributes.append((6, None, values))
+
+        return line_values
 
     @api.onchange('attribute_id')
     def _onchange_attribute_id(self):
@@ -196,6 +277,7 @@ class ProductTemplateAttributeLine(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        vals_list = [self._transform_property_values(vals) for vals in vals_list]
         """Override to:
         - Activate archived lines having the same configuration (if they exist)
             instead of creating new lines.
@@ -256,7 +338,7 @@ class ProductTemplateAttributeLine(models.Model):
         # is ever activated again.
         if not values.get('active', True):
             values['value_ids'] = [(5, 0, 0)]
-        res = super(ProductTemplateAttributeLine, self).write(values)
+        res = super(ProductTemplateAttributeLine, self).write(self._transform_property_values(values))
         if 'active' in values:
             self.flush()
             self.env['product.template'].invalidate_cache(fnames=['attribute_line_ids'])
@@ -378,6 +460,10 @@ class ProductTemplateAttributeLine(models.Model):
     def _without_no_variant_attributes(self):
         return self.filtered(lambda ptal: ptal.attribute_id.create_variant != 'no_variant')
 
+    @api.depends('product_template_value_ids')
+    def _compute_attribute_value_count(self):
+        for record in self:
+            record.attribute_value_count = len(record.product_template_value_ids)
 
 class ProductTemplateAttributeValue(models.Model):
     """Materialized relationship between attribute values
@@ -416,7 +502,9 @@ class ProductTemplateAttributeValue(models.Model):
     # related fields: product template and product attribute
     product_tmpl_id = fields.Many2one('product.template', string="Product Template", related='attribute_line_id.product_tmpl_id', store=True, index=True)
     attribute_id = fields.Many2one('product.attribute', string="Attribute", related='attribute_line_id.attribute_id', store=True, index=True)
-    ptav_product_variant_ids = fields.Many2many('product.product', relation='product_variant_combination', string="Related Variants", readonly=True)
+
+    product_property_ids = fields.One2many('product.property', string='Related Properties', inverse_name='product_template_attribute_value_id')
+    ptav_product_variant_ids = fields.Many2many('product.product', compute='_compute_variants', string="Related Variants", readonly=True)
 
     html_color = fields.Char('HTML Color Index', related="product_attribute_value_id.html_color")
     is_custom = fields.Boolean('Is custom value', related="product_attribute_value_id.is_custom")
@@ -425,6 +513,11 @@ class ProductTemplateAttributeValue(models.Model):
     _sql_constraints = [
         ('attribute_value_unique', 'unique(attribute_line_id, product_attribute_value_id)', "Each value should be defined only once per attribute per product."),
     ]
+
+    @api.depends('product_property_ids')
+    def _compute_variants(self):
+        for record in self:
+            record.ptav_product_variant_ids = record.product_property_ids.product_product_id
 
     @api.constrains('attribute_line_id', 'product_attribute_value_id')
     def _check_valid_values(self):
